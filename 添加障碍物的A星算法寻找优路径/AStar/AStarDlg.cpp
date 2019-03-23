@@ -68,6 +68,8 @@ ON_COMMAND(ID_LAYOUT_BAR, &CAStarDlg::OnLayoutBar)
 ON_COMMAND(ID_SEEK_PATH, &CAStarDlg::OnSeekPath)
 ON_WM_RBUTTONDOWN()
 ON_WM_ERASEBKGND()
+ON_WM_ACTIVATE()
+//ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -120,6 +122,7 @@ BOOL CAStarDlg::OnInitDialog()
 	this_point1 = POINT{ INT_MAX, INT_MAX };
 	this_point2 = POINT{ INT_MAX, INT_MAX };
 
+	SetTimer(1, 1, NULL);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -145,7 +148,6 @@ void CAStarDlg::OnPaint()
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // 用于绘制的设备上下文
-
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// 使图标在工作区矩形中居中
@@ -161,8 +163,8 @@ void CAStarDlg::OnPaint()
 	}
 	else
 	{
+		
 		CClientDC dc(this);
-
 		for (int i = 0; i < 1500; i += 50)
 		{
 			dc.MoveTo(POINT{ i, 0 });
@@ -486,6 +488,7 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 //************************************
 void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (this_cur_menu == ID_SEEK_PATH)
@@ -504,7 +507,9 @@ void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	
 	CDialogEx::OnLButtonDown(nFlags, point);
-	Invalidate();
+	//Invalidate(TRUE);
+	SendMessage(WM_ERASEBKGND, 0, 0);
+	Invalidate(TRUE);
 }
 
 
@@ -525,7 +530,7 @@ void CAStarDlg::OnRButtonDown(UINT nFlags, CPoint point)
 
 	
 	CDialogEx::OnRButtonDown(nFlags, point);
-	Invalidate();
+	Invalidate(TRUE);
 }
 
 void CAStarDlg::OnLayoutBar()
@@ -549,6 +554,18 @@ void CAStarDlg::OnSeekPath()
 BOOL CAStarDlg::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	bool b = CDialogEx::OnEraseBkgnd(pDC);
+	if (b)
+	{
+		SendMessage(WM_PAINT, 0, 0);
+	}
+	
+	return b;
+}
 
-	return CDialogEx::OnEraseBkgnd(pDC);
+
+void CAStarDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
+	// TODO:  在此处添加消息处理程序代码
 }

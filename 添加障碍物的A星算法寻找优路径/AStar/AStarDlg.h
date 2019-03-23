@@ -32,6 +32,8 @@ protected:
 	afx_msg void OnLayoutBar();
 	afx_msg void OnSeekPath();
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	DECLARE_MESSAGE_MAP()
 	
 	
@@ -56,7 +58,8 @@ private:
 private:
 	POINT this_point1;//Æðµã
 	POINT this_point2;//ÖÕµã
-	
+
 public:
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	
+//	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
