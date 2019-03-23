@@ -62,6 +62,8 @@ BEGIN_MESSAGE_MAP(CAStarDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+//	ON_WM_NCLBUTTONDOWN()
+ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -150,3 +152,19 @@ HCURSOR CAStarDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+//void CAStarDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
+//{
+//	// TODO:  在此添加消息处理程序代码和/或调用默认值
+//
+//	CDialogEx::OnNcLButtonDown(nHitTest, point);
+//}
+
+
+void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
