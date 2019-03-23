@@ -64,6 +64,10 @@ BEGIN_MESSAGE_MAP(CAStarDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 //	ON_WM_NCLBUTTONDOWN()
 ON_WM_LBUTTONDOWN()
+ON_COMMAND(ID_LAYOUT_BAR, &CAStarDlg::OnLayoutBar)
+ON_COMMAND(ID_SEEK_PATH, &CAStarDlg::OnSeekPath)
+ON_WM_RBUTTONDOWN()
+ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -98,8 +102,12 @@ BOOL CAStarDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+	//与menu控件相关的代码
+	this_menu.LoadMenu(IDR_MENU1);
+	SetMenu(&this_menu);
+
 	// TODO:  在此添加额外的初始化代码
-	SetWindowPos(NULL, 300, 300, 1018, 790, WS_EX_TOPMOST);
+	SetWindowPos(NULL, 300, 300, 1018, 810, WS_EX_TOPMOST);
 	for (int i = 0; i < 20; ++i)
 	{
 		for (int j = 0; j < 15; ++j)
@@ -107,14 +115,10 @@ BOOL CAStarDlg::OnInitDialog()
 			this_map[i][j] = '0';
 		}
 	}
-	//设置障碍物
-	this_map[8][1] = '1';
-	this_map[8][2] = '1';
-	this_map[8][3] = '1';
-	this_map[9][3] = '1';
-	this_map[10][3] = '1';
-	this_map[10][2] = '1';
-	this_map[10][1] = '1';
+	
+	//路径的起点和终点的设置
+	this_point1 = POINT{ INT_MAX, INT_MAX };
+	this_point2 = POINT{ INT_MAX, INT_MAX };
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -233,13 +237,19 @@ void CAStarDlg::OnPaint()
 		}
 
 		//画起点、终点
-		if (!this_cur_path.empty())
+		//if (!this_cur_path.empty())
 		{
-			POINT p1 = GetXY(this_cur_path[0]);
+			//取坐标整数
+			POINT tilep1 = GetTitle(this_point1);
+			POINT p1 = GetXY(tilep1);
+			//画小方块
 			CRect rt1(p1.x - 10, p1.y - 10, p1.x + 10, p1.y + 10);
 			dc.FillSolidRect(&rt1, RGB(0, 0, 255));
 
-			POINT p2 = GetXY(this_cur_path[this_cur_path.size() - 1]);
+			//取坐标整数
+			POINT tilep2 = GetTitle(this_point2);
+			POINT p2 = GetXY(tilep2);
+			//画小方块
 			CRect rt2(p2.x - 10, p2.y - 10, p2.x + 10, p2.y + 10);
 			dc.FillSolidRect(&rt2, RGB(255, 20, 147));
 		}
@@ -265,6 +275,11 @@ HCURSOR CAStarDlg::OnQueryDragIcon()
 POINT CAStarDlg::GetXY(POINT titlep)
 {
 	return POINT{ (titlep.x + 0.5) * 50, (titlep.y + 0.5) * 50 };
+}
+
+POINT CAStarDlg::GetTitle(POINT xy)
+{
+	return POINT{ int(xy.x/50), int(xy.y/50) };
 }
 
 //************************************
@@ -432,7 +447,7 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 	if (!vec_points.empty())
 	{
 		pa.x = vec_points[0].x,
-			pa.y = vec_points[0].y;
+		pa.y = vec_points[0].y;
 	}
 
 
@@ -473,7 +488,67 @@ void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	GetPath(POINT{ 0, 0 }, POINT{ 9, 8 });
+	if (this_cur_menu == ID_SEEK_PATH)
+	{
+		this_point1 = POINT{ point.x, point.y };
+	}
+	//左击布置障碍物
+	else if (this_cur_menu == ID_LAYOUT_BAR)
+	{
+		POINT pindex = GetTitle(POINT{ point.x, point.y });
+		this_map[pindex.x][pindex.y] = '1';
+	}
+	else
+	{
+		
+	}
+	
 	CDialogEx::OnLButtonDown(nFlags, point);
-	CAStarDlg::OnPaint();
+	Invalidate();
+}
+
+
+void CAStarDlg::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	//右击消除障碍物
+	if (this_cur_menu == ID_SEEK_PATH)
+	{
+		this_point2 = POINT{ point.x, point.y };
+		GetPath(GetTitle(this_point1), GetTitle(this_point2));
+	}
+	if (this_cur_menu == ID_LAYOUT_BAR)
+	{
+		POINT pindex = GetTitle(POINT{ point.x, point.y });
+		this_map[pindex.x][pindex.y] = '0';
+	}
+
+	
+	CDialogEx::OnRButtonDown(nFlags, point);
+	Invalidate();
+}
+
+void CAStarDlg::OnLayoutBar()
+{
+	// TODO:  在此添加命令处理程序代码
+	//MessageBoxA(NULL, "ID_LAYOUT_BAR", "WARN", 0);
+	this_cur_menu = ID_LAYOUT_BAR;
+}
+
+
+void CAStarDlg::OnSeekPath()
+{
+	// TODO:  在此添加命令处理程序代码
+	//MessageBoxA(NULL, "ID_SEEK_PATH", "WARN", 0);
+	this_cur_menu = ID_SEEK_PATH;
+}
+
+
+
+
+BOOL CAStarDlg::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+
+	return CDialogEx::OnEraseBkgnd(pDC);
 }
