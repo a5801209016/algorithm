@@ -254,44 +254,63 @@ HCURSOR CAStarDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-//void CAStarDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
-//{
-//	// TODO:  在此添加消息处理程序代码和/或调用默认值
-//
-//	CDialogEx::OnNcLButtonDown(nHitTest, point);
-//}
-
-
-void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	GetPath(POINT{ 0, 0 }, POINT{ 9, 8 });
-	CDialogEx::OnLButtonDown(nFlags, point);
-	CAStarDlg::OnPaint();
-}
-
-
+//************************************
+// Method:    GetXY
+// FullName:  CAStarDlg::GetXY
+// Access:    protected 
+// Returns:   POINT
+// Qualifier:瓦块坐标变成窗口坐标
+// Parameter: POINT titlep
+//************************************
 POINT CAStarDlg::GetXY(POINT titlep)
 {
 	return POINT{ (titlep.x + 0.5) * 50, (titlep.y + 0.5) * 50 };
 }
 
+//************************************
+// Method:    GetPath
+// FullName:  CAStarDlg::GetPath
+// Access:    protected 
+// Returns:   void
+// Qualifier:获取路径到this_cur_path
+// Parameter: POINT titleOr//起点
+// Parameter: POINT titleEn//终点
+//************************************
 void CAStarDlg::GetPath(POINT titleOr, POINT titleEn)
 {
 	ClearPath();
 	double allcost = abs(titleEn.x - titleOr.x) + abs(titleEn.y - titleOr.y) + abs(titleOr.x - titleOr.x) + abs(titleOr.y - titleOr.y);
-	SeekPath(titleOr, POINT{ titleOr.x - 1, titleOr.y }, titleEn, allcost);
+	bool b = SeekPath(titleOr, POINT{ titleOr.x - 1, titleOr.y }, titleEn, allcost);
+	if (b)
+	{
+		this_cur_path.push_back(titleOr);
+	}
 }
 
+//************************************
+// Method:    ClearPath
+// FullName:  CAStarDlg::ClearPath
+// Access:    protected 
+// Returns:   void
+// Qualifier:将预测路径和正确路径清理
+//************************************
 void CAStarDlg::ClearPath()
 {
 	this_for_path.clear();
 	this_cur_path.clear();
 }
 
+//************************************
+// Method:    SeekPath
+// FullName:  CAStarDlg::SeekPath
+// Access:    protected 
+// Returns:   bool
+// Qualifier:核心A星算法
+// Parameter: POINT titleOr
+// Parameter: POINT titlePr
+// Parameter: POINT titleEn
+// Parameter: int allcost
+//************************************
 bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcost)
 {
 	//1、判断titleOr是否与titleEn相等（如果相等返回这个点）
@@ -437,4 +456,24 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 	}
 	
 	return true;
+}
+
+
+
+//************************************
+// Method:    OnLButtonDown
+// FullName:  CAStarDlg::OnLButtonDown
+// Access:    protected 
+// Returns:   void
+// Qualifier:鼠标左击事件
+// Parameter: UINT nFlags
+// Parameter: CPoint point
+//************************************
+void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	GetPath(POINT{ 0, 0 }, POINT{ 9, 8 });
+	CDialogEx::OnLButtonDown(nFlags, point);
+	CAStarDlg::OnPaint();
 }
