@@ -262,8 +262,6 @@ void CAStarDlg::OnPaint()
 	}
 }
 
-
-
 //************************************
 // Method:    GetCDC
 // FullName:  CAStarDlg::GetCDC
@@ -317,6 +315,20 @@ void CAStarDlg::CopyShows(CWnd* wnd, CDC* memdc)
 	memdc = NULL;
 }
 
+void CAStarDlg::ClearMap()
+{
+	for (int i = 0; i < 20;++i)
+	{
+		for (int j = 0; j < 15;++j)
+		{
+			if (this_map[i][j]=='2')
+			{
+				this_map[i][j] = '0';
+			}
+		}
+	}
+}
+
 //当用户拖动最小化窗口时系统调用此函数取得光标
 //显示。
 HCURSOR CAStarDlg::OnQueryDragIcon()
@@ -360,6 +372,7 @@ void CAStarDlg::GetPath(POINT titleOr, POINT titleEn)
 	{
 		this_cur_path.push_back(titleOr);
 	}
+	ClearMap();
 }
 
 //************************************
@@ -394,9 +407,12 @@ void CAStarDlg::InitPoints()
 //************************************
 bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcost)
 {
-	//1、判断titleOr是否与titleEn相等（如果相等返回这个点）
+	//1、判断titleOr是否是障碍点
+ 	if (this_map[titleOr.x][titleOr.y]=='1')
+	{
+		return false;
+	}
 	this_for_path.push_back(titleOr);
-
 	if (titleOr.x == titleEn.x&&titleOr.y == titleEn.y)
 	{
 		//this_cur_path.push_back(titleOr);
@@ -509,34 +525,65 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 		}
 	}
 
-	POINT pa;
-	if (!vec_points.empty())
+	//POINT pa;
+	//if (!vec_points.empty())
+	//{
+	//	pa.x = vec_points[0].x;
+	//	pa.y = vec_points[0].y;
+	//}
+
+
+	////5、对A重复第1步到第5步
+	//bool  bfind = SeekPath(pa, titleOr, titleEn, allcost);
+
+	////6、把A点放入this_path
+
+	//if (bfind)
+	//{
+	//	this_cur_path.push_back(pa);
+	//}
+	//else
+	//{
+	//	this_map[pa.x][pa.y] = '2';
+	//	vec_points.erase(vec_points.begin());
+	//	if (!vec_points.empty())
+	//	{
+	//		pa.x = vec_points[0].x;
+	//		pa.y = vec_points[0].y;
+	//	}
+	//	else
+	//	{
+	//		return false;
+	//	}
+	//	bool  rfind = SeekPath(pa, titleOr, titleEn, allcost);
+	//	if (!rfind)
+	//	{
+	//		return false;
+	//	}
+	//}
+
+	for (std::vector<POINT>::iterator it = vec_points.begin(); it != vec_points.end(); ++it)
 	{
-		pa.x = vec_points[0].x,
-		pa.y = vec_points[0].y;
-	}
+		POINT pa;
+		pa.x = (*it).x;
+		pa.y = (*it).y;
 
-
-	//5、对A重复第1步到第5步
-	bool  bfind = SeekPath(pa, titleOr, titleEn, allcost);
-
-	//6、把A点放入this_path
-
-	if (bfind)
-	{
-		this_cur_path.push_back(pa);
-	}
-	else
-	{
-		this_map[pa.x][pa.y] = '2';
-		bool  rfind = SeekPath(pa, titleOr, titleEn, allcost);
-		if (!rfind)
+		bool  bfind = SeekPath(pa, titleOr, titleEn, allcost);
+		if (bfind)
 		{
-			return false;
+			this_cur_path.push_back(pa);
+			return true;
+
+		}
+		else
+		{
+			this_map[pa.x][pa.y] = '2';
+
 		}
 	}
-	
-	return true;
+
+	ClearMap();
+	return false;
 }
 
 //************************************

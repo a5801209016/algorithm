@@ -57,7 +57,8 @@ private:
 	std::vector<POINT> this_for_path;
 	std::vector<POINT> this_cur_path;
 
-//与控件相关的成员变量
+	void ClearMap();
+	//与控件相关的成员变量
 private:
 	CMenu this_menu;
 	int this_cur_menu=0;
