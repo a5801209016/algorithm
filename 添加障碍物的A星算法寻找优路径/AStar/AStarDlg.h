@@ -42,7 +42,14 @@ protected:
 	POINT GetTitle(POINT xy);
 	
 	void ClearPath();
+	void InitPoints();
 	bool SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcost);
+
+	//获取一个缓存的CDC
+	void GetMemCDC(CWnd* wnd, CDC* memdc);
+
+	//将内存中的图拷贝到屏幕上进行显示
+	void CopyShows(CWnd* wnd, CDC* memdc);
 
 //与路径相关的成员变量
 private:

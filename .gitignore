@@ -2,3 +2,10 @@
 *.sdf
 *.suo
 *.ipch
+*.log
+*.obj
+*.tlog
+*.aps
+*.pch
+*.pdb
+*.idb

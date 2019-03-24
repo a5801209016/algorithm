@@ -119,8 +119,7 @@ BOOL CAStarDlg::OnInitDialog()
 	}
 	
 	//路径的起点和终点的设置
-	this_point1 = POINT{ INT_MAX, INT_MAX };
-	this_point2 = POINT{ INT_MAX, INT_MAX };
+	InitPoints();
 
 	SetTimer(1, 1, NULL);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -149,7 +148,6 @@ void CAStarDlg::OnPaint()
 	{
 		CPaintDC dc(this); // 用于绘制的设备上下文
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
 		// 使图标在工作区矩形中居中
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
@@ -163,17 +161,19 @@ void CAStarDlg::OnPaint()
 	}
 	else
 	{
-		
-		CClientDC dc(this);
+		CDC* dc = new CDC;
+		GetMemCDC(this, dc);
+
+		//绘图
 		for (int i = 0; i < 1500; i += 50)
 		{
-			dc.MoveTo(POINT{ i, 0 });
-			dc.LineTo(POINT{ i, 1000 });
+			dc->MoveTo(POINT{ i, 0 });
+			dc->LineTo(POINT{ i, 1000 });
 		}
 		for (int j = 0; j < 1000; j += 50)
 		{
-			dc.MoveTo(POINT{ 0, j });
-			dc.LineTo(POINT{ 1500, j });
+			dc->MoveTo(POINT{ 0, j });
+			dc->LineTo(POINT{ 1500, j });
 		}
 
 
@@ -186,7 +186,7 @@ void CAStarDlg::OnPaint()
 				{
 					POINT p = GetXY(POINT{ i, j });
 					CRect rt(p.x - 25, p.y - 25, p.x + 25, p.y + 25);
-					dc.FillSolidRect(&rt, RGB(96, 96, 96));
+					dc->FillSolidRect(&rt, RGB(96, 96, 96));
 				}
 			}
 		}
@@ -207,9 +207,9 @@ void CAStarDlg::OnPaint()
 			DEFAULT_QUALITY,                       //   nQuality   
 			DEFAULT_PITCH | FF_SWISS,     //   nPitchAndFamily     
 			_T("宋体"));
-		dc.SelectObject(&font);
-		dc.SetBkMode(TRANSPARENT);
-		dc.SetTextColor(RGB(255, 0, 0));
+		dc->SelectObject(&font);
+		dc->SetBkMode(TRANSPARENT);
+		dc->SetTextColor(RGB(255, 0, 0));
 
 		for (int i = 0; i < 1500; i += 50)
 		{
@@ -218,22 +218,22 @@ void CAStarDlg::OnPaint()
 				char buff[128] = { 0 };
 				POINT windp = POINT{ i + 6, j + 25 };
 				sprintf(buff, "(%d,\r\n%d)", i / 50, j / 50);
-				dc.TextOut(windp.x, windp.y, CString(buff));
+				dc->TextOut(windp.x, windp.y, CString(buff));
 			}
 		}
 
 
 		//画路径
 		CPen green_pen(PS_SOLID, 5, RGB(0, 255, 0));
-		dc.SelectObject(green_pen);
+		dc->SelectObject(green_pen);
 		std::vector<POINT>::iterator pre_it = this_cur_path.begin();
 		for (std::vector<POINT>::iterator it = this_cur_path.begin(); it != this_cur_path.end(); ++it)
 		{
 			if (it != this_cur_path.begin())
 			{
 
-				dc.MoveTo(GetXY(*pre_it));
-				dc.LineTo(GetXY(*it));
+				dc->MoveTo(GetXY(*pre_it));
+				dc->LineTo(GetXY(*it));
 				pre_it = it;
 			}
 		}
@@ -246,17 +246,75 @@ void CAStarDlg::OnPaint()
 			POINT p1 = GetXY(tilep1);
 			//画小方块
 			CRect rt1(p1.x - 10, p1.y - 10, p1.x + 10, p1.y + 10);
-			dc.FillSolidRect(&rt1, RGB(0, 0, 255));
+			dc->FillSolidRect(&rt1, RGB(0, 0, 255));
 
 			//取坐标整数
 			POINT tilep2 = GetTitle(this_point2);
 			POINT p2 = GetXY(tilep2);
 			//画小方块
 			CRect rt2(p2.x - 10, p2.y - 10, p2.x + 10, p2.y + 10);
-			dc.FillSolidRect(&rt2, RGB(255, 20, 147));
+			dc->FillSolidRect(&rt2, RGB(255, 20, 147));
 		}
+
+		//将内存中的图拷贝到屏幕上进行显示
+		CopyShows(this, dc);
 		CDialogEx::OnPaint();
 	}
+}
+
+
+
+//************************************
+// Method:    GetCDC
+// FullName:  CAStarDlg::GetCDC
+// Access:    protected 
+// Returns:   CDC
+// Qualifier:获取一个缓存的CDC
+//************************************
+void CAStarDlg::GetMemCDC(CWnd* wnd, CDC* memdc)
+{
+	CClientDC dc(wnd);
+	CBitmap MemBitmap;//定义一个位图对象
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	memdc->CreateCompatibleDC(NULL);
+	//这时还不能绘图，因为没有地方画 ^_^
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	CRect rcWnd;
+	GetClientRect(rcWnd);
+	MemBitmap.CreateCompatibleBitmap(this->GetDC(), rcWnd.Width(), rcWnd.Height());
+
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit = memdc->SelectObject(&MemBitmap);
+
+	//先用背景色将位图清除干净，这里我用的是白色作为背景
+	//你也可以用自己应该用的颜色
+	memdc->FillSolidRect(0, 0, rcWnd.Width(), rcWnd.Height(), RGB(255, 255, 255));
+
+	return;
+}
+
+//************************************
+// Method:    CopyShows
+// FullName:  CAStarDlg::CopyShows
+// Access:    protected 
+// Returns:   void
+// Qualifier:将缓存memdc显示到wnd上
+// Parameter: CWnd * wnd
+// Parameter: CDC memdc
+//************************************
+void CAStarDlg::CopyShows(CWnd* wnd, CDC* memdc)
+{
+	CClientDC dc(wnd);
+	CRect rcWnd;
+	wnd->GetWindowRect(&rcWnd);
+	dc.BitBlt(0, 0, rcWnd.Width(), rcWnd.Height(), memdc, 0, 0, SRCCOPY);
+	//绘图完成后的清理
+	memdc->GetCurrentBitmap()->DeleteObject();
+	memdc->DeleteDC();
+	delete memdc;
+	memdc = NULL;
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
@@ -315,6 +373,12 @@ void CAStarDlg::ClearPath()
 {
 	this_for_path.clear();
 	this_cur_path.clear();
+}
+
+void CAStarDlg::InitPoints()
+{
+	this_point1 = POINT{ INT_MAX, INT_MAX };
+	this_point2 = POINT{ INT_MAX, INT_MAX };
 }
 
 //************************************
@@ -475,8 +539,6 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 	return true;
 }
 
-
-
 //************************************
 // Method:    OnLButtonDown
 // FullName:  CAStarDlg::OnLButtonDown
@@ -493,6 +555,8 @@ void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (this_cur_menu == ID_SEEK_PATH)
 	{
+		InitPoints();
+		ClearPath();
 		this_point1 = POINT{ point.x, point.y };
 	}
 	//左击布置障碍物
@@ -507,9 +571,7 @@ void CAStarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	
 	CDialogEx::OnLButtonDown(nFlags, point);
-	//Invalidate(TRUE);
-	SendMessage(WM_ERASEBKGND, 0, 0);
-	Invalidate(TRUE);
+	SendMessage(WM_PAINT);
 }
 
 
@@ -530,7 +592,7 @@ void CAStarDlg::OnRButtonDown(UINT nFlags, CPoint point)
 
 	
 	CDialogEx::OnRButtonDown(nFlags, point);
-	Invalidate(TRUE);
+	SendMessage(WM_PAINT);
 }
 
 void CAStarDlg::OnLayoutBar()
@@ -549,20 +611,11 @@ void CAStarDlg::OnSeekPath()
 }
 
 
-
-
 BOOL CAStarDlg::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	bool b = CDialogEx::OnEraseBkgnd(pDC);
-	if (b)
-	{
-		SendMessage(WM_PAINT, 0, 0);
-	}
-	
-	return b;
+	return CDialogEx::OnEraseBkgnd(pDC);
 }
-
 
 void CAStarDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {

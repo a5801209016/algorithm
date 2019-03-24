@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A99F5F26-42A5-4791-9050-1EE544019E62}</ProjectGuid>
-    <RootNamespace>AStar</RootNamespace>
+    <ProjectGuid>{AF05A150-34F9-4953-9392-97E4C2482786}</ProjectGuid>
+    <RootNamespace>draw</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -43,8 +43,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\out</OutDir>
-    <IntDir>..\..\..\out</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -54,7 +52,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -103,37 +101,35 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AStar.h" />
-    <ClInclude Include="AStarDlg.h" />
+    <ClInclude Include="draw.h" />
+    <ClInclude Include="drawDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AStar.cpp" />
-    <ClCompile Include="AStarDlg.cpp" />
+    <ClCompile Include="draw.cpp" />
+    <ClCompile Include="drawDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="AStar.rc" />
+    <ResourceCompile Include="draw.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\AStar.rc2" />
+    <None Include="res\draw.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\QQ截图20190324173943.bmp" />
-    <Image Include="res\AStar.ico" />
-    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\draw.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="AStar.rc" />
+      <UserProperties RESOURCE_FILE="draw.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
