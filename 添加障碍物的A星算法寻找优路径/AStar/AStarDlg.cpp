@@ -714,6 +714,7 @@ BOOL CAStarDlg::OnEraseBkgnd(CDC* pDC)
 
 void CAStarDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {
+	SendMessage(WM_PAINT);
 	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
 	// TODO:  在此处添加消息处理程序代码
 }

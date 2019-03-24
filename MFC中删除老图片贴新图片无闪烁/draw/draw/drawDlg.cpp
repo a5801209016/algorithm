@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CdrawDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_ACTIVATE()
 END_MESSAGE_MAP()
 
 
@@ -221,4 +222,13 @@ void CdrawDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	this_point = point;
 	SendMessage(WM_PAINT);
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CdrawDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+	SendMessage(WM_PAINT);
+	CDialogEx::OnActivate(nState, pWndOther, bMinimized);
+
+	// TODO:  在此处添加消息处理程序代码
 }

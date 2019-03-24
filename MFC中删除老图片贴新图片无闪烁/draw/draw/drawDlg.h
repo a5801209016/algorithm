@@ -41,4 +41,7 @@ private:
 	POINT this_point;
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+
+	//这个消息一定要添加，并且在里面发送WM_PAINT消息
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 };
