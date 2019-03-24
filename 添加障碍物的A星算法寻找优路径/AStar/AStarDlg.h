@@ -51,13 +51,19 @@ protected:
 	//将内存中的图拷贝到屏幕上进行显示
 	void CopyShows(CWnd* wnd, CDC* memdc);
 
-//与路径相关的成员变量
+	//清除this_map为'2'的点
+	void ClearMap();
+
+	//去掉路径中的环（比如：this_cur_path如果为{[0,0]},[1,0],[1,1],[2,1],[2,0],[3,0]}，那么{[1,0],[1,1],[2,1],[2,0]}就是一个环，要去掉）
+	void ClearLoop();
+
+	//与路径相关的成员变量
 private:
 	char this_map[20][15];
 	std::vector<POINT> this_for_path;
 	std::vector<POINT> this_cur_path;
 
-	void ClearMap();
+	
 	//与控件相关的成员变量
 private:
 	CMenu this_menu;

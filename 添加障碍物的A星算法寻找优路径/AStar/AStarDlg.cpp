@@ -315,6 +315,13 @@ void CAStarDlg::CopyShows(CWnd* wnd, CDC* memdc)
 	memdc = NULL;
 }
 
+//************************************
+// Method:    ClearMap
+// FullName:  CAStarDlg::ClearMap
+// Access:    private 
+// Returns:   void
+// Qualifier:清除this_map为'2'的点
+//************************************
 void CAStarDlg::ClearMap()
 {
 	for (int i = 0; i < 20;++i)
@@ -325,6 +332,41 @@ void CAStarDlg::ClearMap()
 			{
 				this_map[i][j] = '0';
 			}
+		}
+	}
+}
+
+//************************************
+// Method:    ClearLoop
+// FullName:  CAStarDlg::ClearLoop
+// Access:    protected 
+// Returns:   void
+// Qualifier:去掉路径中的环（比如：this_cur_path如果为{[0,0]},[1,0],[1,1],[2,1],[2,0],[3,0]}，
+// 那么{[1,0],[1,1],[2,1],[2,0]}就是一个环，要去掉）
+//************************************
+void CAStarDlg::ClearLoop()
+{
+	if (this_cur_path.size()>=4)
+	{
+		for (std::vector<POINT>::iterator i = this_cur_path.begin(); i != this_cur_path.end()-2;)
+		{
+			POINT p = *i;
+			for (std::vector<POINT>::iterator j = i + 2; j != this_cur_path.end();)
+			{
+				POINT memp = *j;
+				//横向判定
+
+				if ((abs(p.x - memp.x) == 0 && abs(p.y - memp.y) == 1) ||
+					(abs(p.x - memp.x) == 1 && abs(p.y - memp.y) == 0))
+				{
+					//删除中间节点
+					j = this_cur_path.erase(i + 1, j );
+					i = j-1;
+					break;
+				}
+				++j;
+			}
+			++i;
 		}
 	}
 }
@@ -372,7 +414,7 @@ void CAStarDlg::GetPath(POINT titleOr, POINT titleEn)
 	{
 		this_cur_path.push_back(titleOr);
 	}
-	ClearMap();
+	ClearLoop();
 }
 
 //************************************
@@ -408,6 +450,10 @@ void CAStarDlg::InitPoints()
 bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcost)
 {
 	//1、判断titleOr是否是障碍点
+	if (titleOr.x >= 20 || titleOr.y>=15)
+	{
+		return false;
+	}
  	if (this_map[titleOr.x][titleOr.y]=='1')
 	{
 		return false;
@@ -572,6 +618,8 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 		if (bfind)
 		{
 			this_cur_path.push_back(pa);
+			//处理完titleOr后肯定要清理this_map为'2'的点
+			ClearMap();
 			return true;
 
 		}
@@ -581,7 +629,7 @@ bool CAStarDlg::SeekPath(POINT titleOr, POINT titlePr, POINT titleEn, int allcos
 
 		}
 	}
-
+	////处理完titleOr后肯定要清理this_map为'2'的点
 	ClearMap();
 	return false;
 }
