@@ -124,7 +124,7 @@ BOOL CTankDlg::OnInitDialog()
 	CRect rt(POINT{ 500, 500 }, SIZE{ 416, 416 });
 	SetClientRect(rt);
 	InitPoints();
-	SetTimer(1, 1, NULL);
+	SetTimer(1, 0.0, NULL);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -803,13 +803,15 @@ void CTankDlg::OnTimer(UINT_PTR nIDEvent)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent==1)
 	{
-		
-		tank_location_dlg = POINTF{ tank_location_dlg.x + 1.0, tank_location_dlg.y};
-		SendMessage(WM_PAINT);
+		if (timer_cout%100==0)
+		{
+			tank_location_dlg = POINTF{ tank_location_dlg.x + 1.0, tank_location_dlg.y };
+		}
 	} 
 	else
 	{
 	}
+	SendMessage(WM_PAINT);
 	++timer_cout;
 	CDialogEx::OnTimer(nIDEvent);
 }
