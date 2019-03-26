@@ -33,6 +33,12 @@
     <ClInclude Include="TankDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SelfTank.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +48,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TankDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SelfTank.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,9 +72,6 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\block.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\tank.png">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

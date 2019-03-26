@@ -124,7 +124,7 @@ BOOL CTankDlg::OnInitDialog()
 	CRect rt(POINT{ 500, 500 }, SIZE{ 416, 416 });
 	SetClientRect(rt);
 	InitPoints();
-	SetTimer(1, 0.0, NULL);
+	SetTimer(1, 100, NULL);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -195,8 +195,11 @@ void CTankDlg::OnPaint()
 			}
 		}
 
-		ShowImage(_T("res/tank.png"), dc, POINT{ tank_location_dlg.x, tank_location_dlg.y}, SIZE{ 26, 26 }, RGB(0, 0, 0));
-
+		//ShowImage(_T("res/tank_bottom.png"), dc, POINT{ tank_location_dlg.x, tank_location_dlg.y}, SIZE{ 26, 26 }, RGB(0, 0, 0));
+		this_self_tank.SetDirect("left");
+		this_self_tank.OnPaint(dc);
+		//CRect rt1(tank_location_dlg.x - 10, tank_location_dlg.y - 10, tank_location_dlg.x + 10, tank_location_dlg.y + 10);
+		//dc->FillSolidRect(&rt1, RGB(0, 0, 255));
 		//坐标字
 		//CFont font;
 		//font.CreateFont(13,                                    //   字体的高度   
@@ -778,22 +781,16 @@ void CTankDlg::ShowImage(LPCTSTR filepath, CDC* dc, POINT locate, SIZE si, UINT 
 	CBrush brush;
 	if (cImg.Load(filepath) == S_OK)
 	{
-		CImage cImg;
-		CBrush brush;
-		if (cImg.Load(filepath) == S_OK)
-		{
+		
+		CBitmap bitMap;
+		bitMap.Attach(cImg.Detach());
 
-			CBitmap bitMap;
-			bitMap.Attach(cImg.Detach());
+		CDC memdc;
+		memdc.CreateCompatibleDC(NULL);
+		memdc.SelectObject(&bitMap);
 
-			CDC memdc;
-			memdc.CreateCompatibleDC(NULL);
-			memdc.SelectObject(&bitMap);
-
-			dc->TransparentBlt(locate.x, locate.y, si.cx, si.cy, &memdc, 0, 0, si.cx, si.cy, rgb);
-			bitMap.DeleteObject();
-
-		}
+		dc->TransparentBlt(locate.x, locate.y, si.cx, si.cy, &memdc, 0, 0, si.cx, si.cy, rgb);
+		bitMap.DeleteObject();
 	}
 }
 
@@ -801,17 +798,14 @@ void CTankDlg::ShowImage(LPCTSTR filepath, CDC* dc, POINT locate, SIZE si, UINT 
 void CTankDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent==1)
+	switch (nIDEvent)
 	{
-		if (timer_cout%100==0)
-		{
-			tank_location_dlg = POINTF{ tank_location_dlg.x + 1.0, tank_location_dlg.y };
-		}
-	} 
-	else
-	{
+	case 1:
+		tank_location_dlg = POINTF{ tank_location_dlg.x + 1.0, tank_location_dlg.y };
+	default:
+		break;
 	}
+
 	SendMessage(WM_PAINT);
-	++timer_cout;
 	CDialogEx::OnTimer(nIDEvent);
 }

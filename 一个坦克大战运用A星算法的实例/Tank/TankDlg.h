@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "SelfTank.h"
 
 // CTankDlg 对话框
 class CTankDlg : public CDialogEx
@@ -91,6 +91,8 @@ private:
 	//坦克的位置坐标(窗口)
 	POINTF tank_location_dlg =POINTF{ tank_location_tit.x*this_grid_width + tank_size.cx/2, tank_location_tit.y *this_grid_height+tank_size.cy/2 };
 	
+	//坦克
+	SelfTank this_self_tank;
 	//与控件相关的成员变量
 private:
 	CMenu this_menu;
@@ -107,5 +109,4 @@ public:
 	
 //	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	int timer_cout = 0;
 };
