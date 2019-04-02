@@ -79,8 +79,9 @@ bool WhoWin(int who)
    char plus_top_old_step='0';
    int  plus_top_cout=1;
     
+   /*要改*/
    //直线方程i= j+b（i为纵轴，j为横轴）
-   for(int b=0;b<=15-5;++b)
+   for(int b=5-1;b<15;++b)
    {
 		for(int c=0;c<15-b;++c)
 		{
