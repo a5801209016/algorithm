@@ -121,11 +121,11 @@ bool WhoWin(int who)
    char minu_bottom_old_step='0';
    int  minu_bottom_cout=1;
 
-   //直线方程i= j+b的上三角初始化数据
-   char plus_top_old_step='0';
-   int  plus_top_cout=1;
+   //直线方程j= i+b的上三角初始化数据
+   char minu_top_old_step='0';
+   int  minu_top_cout=1;
     
-   //直线方程i= j+b（i为纵轴，j为横轴）
+   //直线方程j= i+b（i为纵轴，j为横轴）
    for(int b=0;b<=15-5;++b)
    {
 		for(int c=0;c<15-b;++c)
