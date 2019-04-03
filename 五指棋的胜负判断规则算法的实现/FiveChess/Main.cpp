@@ -1,24 +1,5 @@
 #include <stdio.h>
-
-char buff[15][15] = 
-{
-	2,1,1,1,1,1,1,1,1,1,2,1,1,1,1,//0
-	2,1,1,1,1,1,1,1,1,1,1,2,1,1,1,//1
-	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,//2
-	2,1,2,1,2,2,2,1,1,2,1,2,2,2,1,//3
-	1,1,2,1,1,1,1,1,1,1,2,2,2,1,2,//4
-	1,1,2,2,2,2,1,1,1,1,1,1,1,1,1,//5
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,//6
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,//7
-	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,//8
-	1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,//9
-	1,1,2,1,1,1,1,1,1,1,1,1,1,1,2,//10
-	1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,//11
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,//12
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,//13
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,//14
-};
-
+#include "Main.h"
 
 bool WhoWin(int who)
 {
@@ -117,46 +98,45 @@ bool WhoWin(int who)
 		}
    }
 
-
-   //直线方程j= i+b的下三角初始化数据
+   //直线方程j+i=k的下三角初始化数据
    char minu_bottom_old_step='0';
    int  minu_bottom_cout=1;
 
-   //直线方程j= i+b的上三角初始化数据
+   //直线方程j+i=b的上三角初始化数据
    char minu_top_old_step='0';
    int  minu_top_cout=1;
     
-   //直线方程j= i+b（i为纵轴，j为横轴）
-   for(int b=0;b<=15-5;++b)
+   //直线方程j+i=k（i为纵轴，j为横轴）
+   for(int k=4;k<15;++k)
    {
-		for(int c=0;c<15-b;++c)
+		for(int e=0;e<=k;++e)
 		{
 		   //检查下三角
-		   if(buff[b+c][c]==plus_bottom_old_step&&buff[b+c][c]==who)
+		   if(buff[k-e][e]==minu_bottom_old_step&&buff[k-e][e]==who)
 		   {
-				++plus_bottom_cout;
+				++minu_bottom_cout;
 		   }
 		   else
 		   {
-				plus_bottom_old_step = buff[b+c][c];
-				plus_bottom_cout = 1;
+				minu_bottom_old_step = buff[k-e][e];
+				minu_bottom_cout = 1;
 		   }
-		   if(plus_bottom_cout>=5)
+		   if(minu_bottom_cout>=5)
 		   {
 				return true;
 		   }
 		   
 		   //检查上三角
-		   if(buff[c][b+c]==plus_top_old_step&&buff[c][b+c]==who)
+		   if(buff[14-e][14-k+e]==minu_top_old_step&&buff[14-e][14-k+e]==who)
 		   {
-				++plus_top_cout;
+				++minu_top_cout;
 		   }
 		   else
 		   {
-				plus_top_old_step = buff[c][b+c];
-				plus_top_cout = 1;
+				minu_top_old_step = buff[14-e][14-k+e];
+				minu_top_cout = 1;
 		   }
-		   if(plus_top_cout>=5)
+		   if(minu_top_cout>=5)
 		   {
 				return true;
 		   }
@@ -169,5 +149,8 @@ bool WhoWin(int who)
 void main()
 {
 	bool r = WhoWin(2);
+
+	char** p = (char**)buff;
+	(char[15][15]*)p;
 	printf("%d\n",r);
 }
