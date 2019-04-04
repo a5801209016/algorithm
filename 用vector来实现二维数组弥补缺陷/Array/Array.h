@@ -64,7 +64,7 @@ Array<T>::Array(int row, int col, ...)
 	{
 		for(int j=0;j<col;++j)
 		{
-			m_arrays[i].swap();
+			m_arrays[i].swap();//
 		}
 	}
     va_end(arg_ptr);        //  清空参数指针
