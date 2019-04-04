@@ -1,9 +1,8 @@
 #include "Array.h"
-
-
+#include <iostream>
+using namespace std;
 
 void main()
 {
-	Array<char> a(2,1);
-
+	Array<int> a(2,10);
 }
